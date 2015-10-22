@@ -11,35 +11,47 @@ opt.parse!(ARGV)
 # p ARGV
 # p OPTS
 
-wordNum = 0
-lineNum = 0
-charNum = 0
+tWordNum = 0
+tLineNum = 0
+tCharNum = 0
 
-fileName = ARGV[0]
-#fileName = "text.txt"
-file = open(fileName)
+ARGV.each do |f|
+  file = open(f)
 
-file.each {|line|
-  lineNum += 1
-  charNum += line.size  # wcは改行文字も含んだバイト数を出力するので取り除く前に
-  line.chomp!           # 改行を取り除く
-  words = line.split(/\s+/).reject{|w| w.empty?}  # スペースでsplit、行頭がスペースの場合wordsに入ってしまうので取り除く
-  wordNum += words.size
-}
+  wNum = 0
+  lNum = 0
+  cNum = 0
 
-if OPTS.empty?
-  puts "#{lineNum} #{wordNum} #{charNum} #{fileName}"
-else
-  OPTS.each{|key, value|
-    if key == :l && value == true
-      print "#{lineNum} "
-    elsif key == :w && value == true
-      print  "#{wordNum} "
-    elsif key == :c && value == true
-      print "#{charNum} "
-    end
-  }
-  puts fileName
+  file.each do |line|
+    lNum += 1
+    cNum += line.size  # wcは改行文字も含んだバイト数を出力するので取り除く前に
+    line.chomp!           # 改行を取り除く
+    words = line.split(/\s+/).reject{|w| w.empty?}  # スペースでsplit、行頭がスペースの場合wordsに入ってしまうので取り除く
+    wNum += words.size
+  end
+
+  if OPTS.empty?
+    puts "#{lNum} #{wNum} #{cNum} #{f}"
+  else
+    OPTS.each{|key, value|
+      if key == :l && value == true
+        print "#{lNum} "
+      elsif key == :w && value == true
+        print  "#{wNum} "
+      elsif key == :c && value == true
+        print "#{cNum} "
+      end
+    }
+    puts f
+  end
+
+  tLineNum += lNum
+  tWordNum += wNum
+  tCharNum += cNum
+  
+  file.close
 end
 
-file.close
+if ARGV.count > 1
+  puts "#{tLineNum} #{tWordNum} #{tCharNum} total"
+end
