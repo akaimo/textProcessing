@@ -12,12 +12,11 @@ line_array = []
 char_array = []
 
 ARGV.each do |f|
-  file = open(f)
-
   w_num = 0
   l_num = 0
   c_num = 0
 
+  file = open(f)
   file.each do |line|
     l_num += 1
     c_num += line.size
@@ -25,12 +24,11 @@ ARGV.each do |f|
     words = line.split(/\s+/).reject(&:empty?) # split space
     w_num += words.size
   end
+  file.close
 
   word_array.push(w_num)
   line_array.push(l_num)
   char_array.push(c_num)
-
-  file.close
 end
 
 def sum(ary)
@@ -40,7 +38,6 @@ def sum(ary)
   end
   total
 end
-
 total_line = sum(line_array)
 total_word = sum(word_array)
 total_char = sum(char_array)
