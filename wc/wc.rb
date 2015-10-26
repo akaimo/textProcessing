@@ -31,23 +31,16 @@ ARGV.each do |f|
   char_array.push(c_num)
 end
 
-def sum(ary)
-  total = 0
-  ary.each do |n|
-    total += n
-  end
-  total
-end
-total_line = sum(line_array)
-total_word = sum(word_array)
-total_char = sum(char_array)
+total_line = line_array.inject(0) { |sum, i| sum + i }
+total_word = word_array.inject(0) { |sum, i| sum + i }
+total_char = char_array.inject(0) { |sum, i| sum + i }
 digit = [total_line, total_word, total_char].max.to_s.length + 2
 
-ARGV.count.times do |n|
+ARGV.each_with_index do |file, n|
   if OPTS.empty?
     puts "#{format('%*d', digit, line_array[n])} \
     #{format('%*d', digit, word_array[n])} \
-    #{format('%*d', digit, char_array[n])} " + ARGV[n]
+    #{format('%*d', digit, char_array[n])} " + file
   else
     OPTS.each do|key, value|
       if key == :l && value == true
@@ -58,7 +51,7 @@ ARGV.count.times do |n|
         print format('%*d', digit, char_array[n])
       end
     end
-    puts " #{ARGV[n]}"
+    puts " #{file}"
   end
 end
 
