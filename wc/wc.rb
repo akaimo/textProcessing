@@ -21,19 +21,19 @@ ARGV.each do |f|
     l_num += 1
     c_num += line.size
     line.chomp! # remove LF
-    words = line.split(/\s+/).reject(&:empty?) # split space
+    words = line.split().reject(&:empty?) # split space
     w_num += words.size
   end
   file.close
 
-  word_array.push(w_num)
-  line_array.push(l_num)
-  char_array.push(c_num)
+  word_array << w_num
+  line_array << l_num
+  char_array << c_num
 end
 
-total_line = line_array.inject(0) { |sum, i| sum + i }
-total_word = word_array.inject(0) { |sum, i| sum + i }
-total_char = char_array.inject(0) { |sum, i| sum + i }
+total_line = line_array.inject(0) { |a, e| a + e }
+total_word = word_array.inject(0) { |a, e| a + e }
+total_char = char_array.inject(0) { |a, e| a + e }
 digit = [total_line, total_word, total_char].max.to_s.length + 2
 
 ARGV.each_with_index do |file, n|
@@ -42,7 +42,7 @@ ARGV.each_with_index do |file, n|
     #{format('%*d', digit, word_array[n])} \
     #{format('%*d', digit, char_array[n])} " + file
   else
-    OPTS.each do|key, value|
+    OPTS.each do |key, value|
       if key == :l && value == true
         print format('%*d', digit, line_array[n])
       elsif key == :w && value == true
@@ -61,7 +61,7 @@ if ARGV.count > 1
     #{format('%*d', digit, total_word)} \
     #{format('%*d', digit, total_char)} " + 'total'
   else
-    OPTS.each do|key, value|
+    OPTS.each do |key, value|
       if key == :l && value == true
         print format('%*d', digit, total_line)
       elsif key == :w && value == true
