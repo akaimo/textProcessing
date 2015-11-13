@@ -6,8 +6,7 @@ end
 begin
   file = open(ARGV[1])
 rescue => ex
-  print 'egrep: text: '
-  puts ex
+  puts "egrep: text: #{ex}"
   exit
 end
 

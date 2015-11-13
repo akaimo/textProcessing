@@ -21,7 +21,7 @@ ARGV.each do |f|
     l_num += 1
     c_num += line.size
     line.chomp! # remove LF
-    words = line.split().reject(&:empty?) # split space
+    words = line.split.reject(&:empty?) # split space
     w_num += words.size
   end
   file.close

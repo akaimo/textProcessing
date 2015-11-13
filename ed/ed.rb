@@ -1,8 +1,10 @@
 # linux command 'ed'
 class REPL
-  def initialize
-    @cmd = nil
+  def initialize(buffer)
+    @buffer = buffer
+  end
 
+  def start
     loop do
       read
       evel
@@ -11,15 +13,38 @@ class REPL
   end
 
   def read
-    @cmd = STDIN.gets
+    cmd = STDIN.gets
+    @cmd = cmd.match(/[acdeDfhHijlmnpPqQrstuwWz=]/)
   end
 
   def evel
+    if @cmd.nil?
+      @result = '?'
+    else
+      # execution command
+      exit if @cmd[0] == 'q'
+      @result = @cmd[0]
+    end
   end
 
   def print
-    puts @cmd
+    puts @result
   end
 end
 
-REPL.new
+# main
+begin
+  file = open(ARGV[0])
+rescue => ex
+  puts ex
+  exit
+end
+
+buffer = []
+file.each do |line|
+  buffer.push(line)
+end
+file.close
+
+repl = REPL.new(buffer)
+repl.start
