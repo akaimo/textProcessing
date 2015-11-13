@@ -13,17 +13,17 @@ class REPL
   end
 
   def read
-    cmd = STDIN.gets
-    @cmd = cmd.match(/[acdeDfhHijlmnpPqQrstuwWz=]/)
+    @cmd = STDIN.gets
   end
 
   def evel
-    if @cmd.nil?
+    cmd = @cmd.match(/[acdeDfhHijlmnpPqQrstuwWz=]/)
+    if cmd.nil?
       @result = '?'
     else
       # execution command
-      exit if @cmd[0] == 'q'
-      @result = @cmd[0]
+      exit if cmd[0] == 'q'
+      @result = cmd[0]
     end
   end
 
