@@ -28,11 +28,16 @@ class REPL
   end
 
   def print
-    puts @result
+    puts @resul
   end
 end
 
 # main
+if ARGV[0].nil?
+  puts 'usage: ed [file]'
+  exit
+end
+
 begin
   file = open(ARGV[0])
 rescue => ex
