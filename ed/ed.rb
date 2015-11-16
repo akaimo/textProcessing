@@ -13,22 +13,27 @@ class REPL
   end
 
   def read
-    @cmd = STDIN.gets
+    @cmd = STDIN.gets.chomp
   end
 
   def evel
-    cmd = @cmd.match(/[acdeDfhHijlmnpPqQrstuwWz=]/)
-    if cmd.nil?
+    if @cmd.length == 1
+      @cmd = @cmd.match(/[acdeDfhHijlmnpPqQrstuwWz=]/)
+    else
+      @cmd = nil
+    end
+
+    if @cmd.nil?
       @result = '?'
     else
       # execution command
-      exit if cmd[0] == 'q'
-      @result = cmd[0]
+      exit if @cmd[0] == 'q'
+      @result = @cmd[0]
     end
   end
 
   def print
-    puts @resul
+    puts @result
   end
 end
 
