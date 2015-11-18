@@ -2,6 +2,8 @@
 class REPL
   def initialize(buffer)
     @buffer = buffer
+    @current_line = buffer.count
+    @current_line = 1
   end
 
   def start
@@ -27,13 +29,25 @@ class REPL
       @result = '?'
     else
       # execution command
+      newline if @cmd[3] == ''
       exit if @cmd[3] == 'q'
-      @result = @cmd[0]
     end
   end
 
   def print
     puts @result
+    puts "now_line: #{@current_line}"
+  end
+
+  # command
+  def newline
+    p 'newline'
+    if @current_line == @buffer.count
+      @result = '?'
+    else
+      @current_line += 1
+      @result = @buffer[@current_line - 1]
+    end
   end
 end
 
