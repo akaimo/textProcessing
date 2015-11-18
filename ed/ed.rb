@@ -18,7 +18,7 @@ class REPL
 
   def evel
     addr = '(?:\d+|[.$,:]|\/.*\/)'
-    cmnd = '(?:wq|[acdefgijkmnpqrsw=]|\z)'
+    cmnd = '(?:wq|[acdefgijkmnpqrsw=]|\s|\z)'
     prmt = '(?:.*)'
     @cmd = @cmd.match(/\A(?:(#{addr})(?:,(#{addr}))?)?(#{cmnd})(#{prmt})?\z/)
     p @cmd # debug
