@@ -17,17 +17,17 @@ class REPL
   end
 
   def evel
-    if @cmd.length == 1
-      @cmd = @cmd.match(/[acdeDfhHijlmnpPqQrstuwWz=]/)
-    else
-      @cmd = nil
-    end
+    addr = '(?:\d+|[.$,:]|\/.*\/)'
+    cmnd = '(?:wq|[acdefgijkmnpqrsw=]|\z)'
+    prmt = '(?:.*)'
+    @cmd = @cmd.match(/\A(?:(#{addr})(?:,(#{addr}))?)?(#{cmnd})(#{prmt})?\z/)
+    p @cmd # debug
 
     if @cmd.nil?
       @result = '?'
     else
       # execution command
-      exit if @cmd[0] == 'q'
+      exit if @cmd[3] == 'q'
       @result = @cmd[0]
     end
   end
