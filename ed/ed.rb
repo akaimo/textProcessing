@@ -113,11 +113,42 @@ class REPL
     if @cmd[1].nil?
       @result = @buffer[@current_line - 1]
     elsif @cmd[3].nil?
-      @current_line = @cmd[1].to_i
-      @result = @buffer[@current_line - 1]
+      print_line_first_addr
     else
       print_line_addr
     end
+  end
+
+  def print_line_first_addr
+    if @cmd[1].match(/[.$,;]/)
+      print_line_first_mark(@cmd[1])
+    else
+      @current_line = @cmd[1].to_i
+      @result = @buffer[@current_line - 1]
+    end
+  end
+
+  def print_line_first_mark(mark)
+    if mark == '.'
+      @result = @buffer[@current_line - 1]
+    elsif mark == '$'
+      @result = @buffer[-1]
+      @current_line = @buffer.count
+    elsif mark == ','
+      print_line_array(1, @buffer.count)
+    elsif mark == ';'
+      print_line_array(@current_line, @buffer.count)
+    else
+      @result = '?'
+    end
+  end
+
+  def print_line_array(first, last)
+    @result = []
+    first.upto(last) do |n|
+      @result << @buffer[n - 1]
+    end
+    @current_line = last
   end
 
   def print_line_addr
