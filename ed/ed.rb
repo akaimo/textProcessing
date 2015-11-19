@@ -18,11 +18,11 @@ class REPL
   end
 
   def evel
-    addr = '(?:\d+|[.$,:]|\/.*\/)'
+    addr = '(?:\d+|[.$,;]|\/.*\/)'
     cmnd = '(?:wq|[acdefgijkmnpqrsw=]|\s|\z)'
     prmt = '(?:.*)'
-    @cmd = @cmd.match(/\A(?:(#{addr})(?:,(#{addr}))?)?(#{cmnd})(#{prmt})?\z/)
-    # p @cmd # debug
+    @cmd = @cmd.match(/\A(?:(#{addr})(?:(,)?(#{addr}))?)?(#{cmnd})(#{prmt})?\z/)
+    p @cmd # debug
 
     @output = true
     if @cmd.nil?
@@ -39,10 +39,12 @@ class REPL
 
   def execute_command
     @result = '?'
-    newline if @cmd[3] == ''
-    add if @cmd[3] == 'a'
-    print_line if @cmd[3] == 'p'
-    exit if @cmd[3] == 'q'
+    case @cmd[4]
+    when ''  then newline
+    when 'a' then add
+    when 'p' then print_line
+    when 'q' then exit
+    end
   end
 
   # command
@@ -73,7 +75,7 @@ class REPL
   end
 
   def add
-    return unless @cmd[4] == ''
+    return unless @cmd[5] == ''
 
     @new_buffer = []
     loop do
@@ -95,7 +97,7 @@ class REPL
   def print_line
     if @cmd[1].nil?
       @result = @buffer[@current_line - 1]
-    elsif @cmd[2].nil?
+    elsif @cmd[3].nil?
       @current_line = @cmd[1].to_i
       @result = @buffer[@current_line - 1]
     else
@@ -104,16 +106,16 @@ class REPL
   end
 
   def print_line_addr
-    first = @cmd[1].to_i
-    second = @cmd[2].to_i
-    return if first > second
+    first_line = @cmd[1].to_i
+    last_line = @cmd[3].to_i
+    return if first_line > last_line
 
     @print_array = []
-    first.upto(second) do |n|
+    first_line.upto(last_line) do |n|
       @print_array << @buffer[n - 1]
     end
 
-    @current_line = second
+    @current_line = last_line
     @result = @print_array
   end
 end
