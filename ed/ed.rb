@@ -41,7 +41,7 @@ class REPL
     @result = '?'
     newline if @cmd[3] == ''
     add if @cmd[3] == 'a'
-    put if @cmd[3] == 'p'
+    print_line if @cmd[3] == 'p'
     exit if @cmd[3] == 'q'
   end
 
@@ -92,8 +92,29 @@ class REPL
     @output = false
   end
 
-  def put
-    p 'put'
+  def print_line
+    if @cmd[1].nil?
+      @result = @buffer[@current_line - 1]
+    elsif @cmd[2].nil?
+      @current_line = @cmd[1].to_i
+      @result = @buffer[@current_line - 1]
+    else
+      print_line_addr
+    end
+  end
+
+  def print_line_addr
+    first = @cmd[1].to_i
+    second = @cmd[2].to_i
+    return if first > second
+
+    @print_array = []
+    first.upto(second) do |n|
+      @print_array << @buffer[n - 1]
+    end
+
+    @current_line = second
+    @result = @print_array
   end
 end
 
