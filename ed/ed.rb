@@ -28,17 +28,21 @@ class REPL
     if @cmd.nil?
       @result = '?'
     else
-      # execution command
-      @result = '?'
-      newline if @cmd[3] == ''
-      add if @cmd[3] == 'a'
-      exit if @cmd[3] == 'q'
+      execute_command
     end
   end
 
   def print
     puts @result if @output == true
     puts "now_line: #{@current_line}" # debug
+  end
+
+  def execute_command
+    @result = '?'
+    newline if @cmd[3] == ''
+    add if @cmd[3] == 'a'
+    put if @cmd[3] == 'p'
+    exit if @cmd[3] == 'q'
   end
 
   # command
@@ -86,6 +90,10 @@ class REPL
     end
 
     @output = false
+  end
+
+  def put
+    p 'put'
   end
 end
 
