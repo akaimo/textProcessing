@@ -22,7 +22,7 @@ class REPL
     cmnd = '(?:wq|[acdefgijkmnpqrsw=]|\s|\z)'
     prmt = '(?:.*)'
     @cmd = @cmd.match(/\A(?:(#{addr})(?:(,)?(#{addr}))?)?(#{cmnd})(#{prmt})?\z/)
-    p @cmd # debug
+    # p @cmd # debug
 
     @output = true
     if @cmd.nil?
@@ -34,7 +34,7 @@ class REPL
 
   def print
     puts @result if @output == true
-    puts "now_line: #{@current_line}" # debug
+    puts "current_line: #{@current_line}" # debug
   end
 
   def execute_command
@@ -49,10 +49,12 @@ class REPL
 
   # command
   def newline
-    if @cmd[1].nil?
+    if @cmd[1].nil? && @cmd[3].nil?
       newline_none_addr
+    elsif @cmd[3].nil?
+      newline_addr(@cmd[1])
     else
-      newline_addr
+      newline_addr(@cmd[3])
     end
   end
 
@@ -65,12 +67,25 @@ class REPL
     end
   end
 
-  def newline_addr
-    if @cmd[1].to_i > @buffer.count || @cmd[1].to_i == 0
+  def newline_addr(addr)
+    if addr.match(/[.,$;]/)
+      newline_mark(addr)
+    elsif addr.to_i > @buffer.count || addr.to_i == 0
       @result = '?'
     else
-      @current_line = @cmd[1].to_i
+      @current_line = addr.to_i
       @result = @buffer[@current_line - 1]
+    end
+  end
+
+  def newline_mark(mark)
+    if mark == '.'
+      @result = @buffer[@current_line - 1]
+    elsif mark.match(/[,$;]/)
+      @current_line = @buffer.count
+      @result = @buffer[-1]
+    else
+      @result = '?'
     end
   end
 
