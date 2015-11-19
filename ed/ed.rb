@@ -64,7 +64,7 @@ class REPL
   end
 
   def newline_addr
-    if @cmd[1].to_i > @buffer.count
+    if @cmd[1].to_i > @buffer.count || @cmd[1].to_i == 0
       @result = '?'
     else
       @current_line = @cmd[1].to_i
