@@ -144,6 +144,7 @@ class REPL
   end
 
   def print_line_array(first, last)
+    return if first > last
     @result = []
     first.upto(last) do |n|
       @result << @buffer[n - 1]
@@ -152,17 +153,41 @@ class REPL
   end
 
   def print_line_addr
-    first_line = @cmd[1].to_i
-    last_line = @cmd[3].to_i
-    return if first_line > last_line
+    first = @cmd[1].match(/\d/)
+    last = @cmd[3].match(/\d/)
 
-    @print_array = []
-    first_line.upto(last_line) do |n|
-      @print_array << @buffer[n - 1]
+    if first && last # all number
+      print_line_array(@cmd[1].to_i, @cmd[3].to_i)
+    elsif first && !last # first number
+      case @cmd[3]
+      when '.' then print_line_array(@cmd[1].to_i, @current_line)
+      when '$' then print_line_array(@cmd[1].to_i, @buffer.count)
+      when ',' then print_line_array(1, @buffer.count)
+      when ';' then print_line_array(@current_line, @buffer.count)
+      end
+    elsif !first && last # last number
+      case @cmd[1]
+      when '.'
+        print_line_array(@current_line, @cmd[3].to_i)
+      when '$'
+        print_line_array(@buffer.count, @cmd[3].to_i)
+      when ','
+        return unless @cmd[2].nil?
+        print_line_array(1, @cmd[3].to_i)
+      when ';'
+        return unless @cmd[2].nil?
+        print_line_array(@current_line, @cmd[3].to_i)
+      end
+    else # all mark
+      case @cmd[3]
+      when ',' then print_line_array(1, @buffer.count)
+      when ';' then print_line_array(@current_line, @buffer.count)
+      end
+
+      if @cmd[1] == '.' && @cmd[3] == '$'
+        print_line_array(@current_line, @buffer.count)
+      end
     end
-
-    @current_line = last_line
-    @result = @print_array
   end
 end
 
