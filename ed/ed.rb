@@ -159,34 +159,46 @@ class REPL
     if first && last # all number
       print_line_array(@cmd[1].to_i, @cmd[3].to_i)
     elsif first && !last # first number
-      case @cmd[3]
-      when '.' then print_line_array(@cmd[1].to_i, @current_line)
-      when '$' then print_line_array(@cmd[1].to_i, @buffer.count)
-      when ',' then print_line_array(1, @buffer.count)
-      when ';' then print_line_array(@current_line, @buffer.count)
-      end
+      print_line_f_num_l_mark
     elsif !first && last # last number
-      case @cmd[1]
-      when '.'
-        print_line_array(@current_line, @cmd[3].to_i)
-      when '$'
-        print_line_array(@buffer.count, @cmd[3].to_i)
-      when ','
-        return unless @cmd[2].nil?
-        print_line_array(1, @cmd[3].to_i)
-      when ';'
-        return unless @cmd[2].nil?
-        print_line_array(@current_line, @cmd[3].to_i)
-      end
+      print_line_f_mark_l_num
     else # all mark
-      case @cmd[3]
-      when ',' then print_line_array(1, @buffer.count)
-      when ';' then print_line_array(@current_line, @buffer.count)
-      end
+      print_line_all_mark
+    end
+  end
 
-      if @cmd[1] == '.' && @cmd[3] == '$'
-        print_line_array(@current_line, @buffer.count)
-      end
+  def print_line_f_num_l_mark
+    case @cmd[3]
+    when '.' then print_line_array(@cmd[1].to_i, @current_line)
+    when '$' then print_line_array(@cmd[1].to_i, @buffer.count)
+    when ',' then print_line_array(1, @buffer.count)
+    when ';' then print_line_array(@current_line, @buffer.count)
+    end
+  end
+
+  def print_line_f_mark_l_num
+    case @cmd[1]
+    when '.'
+      print_line_array(@current_line, @cmd[3].to_i)
+    when '$'
+      print_line_array(@buffer.count, @cmd[3].to_i)
+    when ','
+      return unless @cmd[2].nil?
+      print_line_array(1, @cmd[3].to_i)
+    when ';'
+      return unless @cmd[2].nil?
+      print_line_array(@current_line, @cmd[3].to_i)
+    end
+  end
+
+  def print_line_all_mark
+    case @cmd[3]
+    when ',' then print_line_array(1, @buffer.count)
+    when ';' then print_line_array(@current_line, @buffer.count)
+    end
+
+    if @cmd[1] == '.' && @cmd[3] == '$'
+      print_line_array(@current_line, @buffer.count)
     end
   end
 end
