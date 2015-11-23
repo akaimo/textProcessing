@@ -218,7 +218,7 @@ class REPL
       delete_first_addr
     else
       # all addr
-      p 'all'
+      delete_all_addr
     end
   end
 
@@ -263,6 +263,56 @@ class REPL
 
     @current_line = last
     @current_line = @buffer.count if @current_line > @buffer.count
+  end
+
+  def delete_all_addr
+    first = @cmd[1].match(/\d/)
+    last = @cmd[3].match(/\d/)
+
+    if first && last # all number
+      delete_array(@cmd[1].to_i, @cmd[3].to_i)
+    elsif first && !last # first number
+      delete_f_num_l_mark
+    elsif !first && last # last number
+      delete_f_mark_l_num
+    else # all mark
+      delete_all_mark
+    end
+  end
+
+  def delete_f_num_l_mark
+    case @cmd[3]
+    when '.' then delete_array(@cmd[1].to_i, @current_line)
+    when '$' then delete_array(@cmd[1].to_i, @buffer.count)
+    when ',' then delete_array(1, @buffer.count)
+    when ';' then delete_array(@current_line, @buffer.count)
+    end
+  end
+
+  def delete_f_mark_l_num
+    case @cmd[1]
+    when '.'
+      delete_array(@current_line, @cmd[3].to_i)
+    when '$'
+      delete_array(@buffer.count, @cmd[3].to_i)
+    when ','
+      return unless @cmd[2].nil?
+      delete_array(1, @cmd[3].to_i)
+    when ';'
+      return unless @cmd[2].nil?
+      delete_array(@current_line, @cmd[3].to_i)
+    end
+  end
+
+  def delete_all_mark
+    case @cmd[3]
+    when ',' then delete_array(1, @buffer.count)
+    when ';' then delete_array(@current_line, @buffer.count)
+    end
+
+    if @cmd[1] == '.' && @cmd[3] == '$'
+      delete_array(@current_line, @buffer.count)
+    end
   end
 end
 
