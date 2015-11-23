@@ -111,11 +111,12 @@ class REPL
 
   def print_line
     if @cmd[1].nil?
+      # none addr
       @result = @buffer[@current_line - 1]
     elsif @cmd[3].nil?
       print_line_first_addr
     else
-      print_line_addr
+      print_line_all_addr
     end
   end
 
@@ -123,6 +124,7 @@ class REPL
     if @cmd[1].match(/[.$,;]/)
       print_line_first_mark(@cmd[1])
     else
+      # first addr is number
       @current_line = @cmd[1].to_i
       @result = @buffer[@current_line - 1]
     end
@@ -152,7 +154,7 @@ class REPL
     @current_line = last
   end
 
-  def print_line_addr
+  def print_line_all_addr
     first = @cmd[1].match(/\d/)
     last = @cmd[3].match(/\d/)
 
