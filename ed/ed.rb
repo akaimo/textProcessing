@@ -215,11 +215,54 @@ class REPL
       @current_line = @buffer.count if @current_line > @buffer.count
     elsif @cmd[3].nil?
       # only first addr
-      p 'first'
+      delete_first_addr
     else
       # all addr
       p 'all'
     end
+  end
+
+  def delete_first_addr
+    if @cmd[1].match(/[.$,;]/)
+      delete_first_mark(@cmd[1])
+    else
+      # first addr is number
+      if @cmd[1].to_i > @current_line
+        @output = true
+        return
+      end
+
+      @current_line = @cmd[1].to_i
+      @buffer.delete_at(@current_line - 1)
+    end
+  end
+
+  def delete_first_mark(mark)
+    if mark == '.'
+      @buffer.delete_at(@current_line - 1)
+      @current_line = @buffer.count if @current_line > @buffer.count
+    elsif mark == '$'
+      @buffer.delete_at(@current_line - 1)
+      @current_line = @buffer.count
+    elsif mark == ','
+      delete_array(1, @buffer.count)
+    elsif mark == ';'
+      delete_array(@current_line, @buffer.count)
+    else
+      @result = '?'
+    end
+  end
+
+  def delete_array(first, last)
+    return if first > last
+    return if @buffer.count < last
+
+    (last - first + 1).times do
+      @buffer.delete_at(first - 1)
+    end
+
+    @current_line = last
+    @current_line = @buffer.count if @current_line > @buffer.count
   end
 end
 
