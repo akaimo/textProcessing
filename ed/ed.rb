@@ -42,6 +42,7 @@ class REPL
     case @cmd[4]
     when ''  then newline
     when 'a' then add
+    when 'd' then delete
     when 'p' then print_line
     when 'q' then exit
     end
@@ -201,6 +202,23 @@ class REPL
 
     if @cmd[1] == '.' && @cmd[3] == '$'
       print_line_array(@current_line, @buffer.count)
+    end
+  end
+
+  def delete
+    return unless @cmd[5] == ''
+
+    @output = false
+    if @cmd[1].nil?
+      # none addr
+      @buffer.delete_at(@current_line - 1)
+      @current_line = @buffer.count if @current_line > @buffer.count
+    elsif @cmd[3].nil?
+      # only first addr
+      p 'first'
+    else
+      # all addr
+      p 'all'
     end
   end
 end
