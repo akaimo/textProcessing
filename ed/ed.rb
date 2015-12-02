@@ -34,7 +34,7 @@ class REPL
 
   def print
     puts @result if @output == true
-    puts "current_line: #{@current_line}" # debug
+    # puts "current_line: #{@current_line}" # debug
   end
 
   def execute_command
