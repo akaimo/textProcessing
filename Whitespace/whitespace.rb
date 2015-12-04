@@ -1,11 +1,19 @@
 class Tokenizer
   def initialize(program)
     @tokens = []
-    @program = []
-    program.each do |line|
-      @program << line
-    end
+    @program = program.read
+    tokenize
+  end
+
+  def tokenize
     p @program
+    @result = []
+    while @program.length > 0
+      # IMP
+      # command
+      # param
+      # @result << imp << cmd << prm
+    end
   end
 end
 
