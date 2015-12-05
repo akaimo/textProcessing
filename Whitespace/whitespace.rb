@@ -1,47 +1,47 @@
 class Tokenizer
   @@imps = {
     ' ' => :stack,
-    '\t ' => :arithmetic,
-    '\t\t' => :heap,
-    '\n' => :flow,
-    '\t\n' => :io
+    "\t " => :arithmetic,
+    "\t\t" => :heap,
+    "\n" => :flow,
+    "\t\n" => :io
   }
 
   @@stack = {
     ' ' => :push,
-    '\n ' => :dup,
-    '\n\t' => :swap,
-    '\n\n' => :discard
+    "\n " => :dup,
+    "\n\t" => :swap,
+    "\n\n" => :discard
   }
 
   @@arithmetic = {
     '  ' => :add,
-    ' \t' => :sub,
-    ' \n' => :mul,
-    '\t ' => :div,
-    '\t\t' => :mod
+    " \t" => :sub,
+    " \n" => :mul,
+    "\t " => :div,
+    "\t\t" => :mod
   }
 
   @@heap = {
     ' ' => :store,
-    '\t' => :retrive
+    "\t" => :retrive
   }
 
   @@flow = {
     '  ' => :label,
-    ' \t' => :cell,
-    ' \n' => :jump,
-    '\t ' => :jz,
-    '\t\t' => :jn,
-    '\t\n' => :ret,
-    '\n\n' => :exit
+    " \t" => :cell,
+    " \n" => :jump,
+    "\t " => :jz,
+    "\t\t" => :jn,
+    "\t\n" => :ret,
+    "\n\n" => :exit
   }
 
   @@io = {
     '  ' => :outchar,
-    ' \t' => :outnum,
-    '\t ' => :readchar,
-    '\t\t' => :readnum
+    " \t" => :outnum,
+    "\t " => :readchar,
+    "\t\t" => :readnum
   }
 
   @@param = [:stack, :label, :cell, :jump, :jz, :jn]
@@ -114,11 +114,11 @@ class Tokenizer
   end
 
   def parameter
-    if @program =~ /([ \t]+\n)/
+    if @program =~ /\A([ \t]+\n)/
       @param = Regexp.last_match(1)
       p @param
       @result << @param
-      @program.sub!(/([ \t]+\n)/, '')
+      @program.sub!(/\A([ \t]+\n)/, '')
     else
       fail Exception, 'undefind Parameters'
     end
