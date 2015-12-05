@@ -116,7 +116,13 @@ class Tokenizer
   end
 
   def flow
-    p 'flow'
+    match = /\A( [ \t\n]|\t[ \t\n]|\n\n)/
+    if @program =~ match
+      @cmd = @@flow[Regexp.last_match(1)]
+      @program.sub!(match, '')
+    else
+      fail Exception, 'undefind flow command'
+    end
   end
 
   def io
