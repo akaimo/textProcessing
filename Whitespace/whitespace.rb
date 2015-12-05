@@ -21,14 +21,17 @@ class Tokenizer
   end
 
   def tokenize
-    p @program
     @result = []
     while @program.length > 0
       # IMP
-      imp = @program.match(/\A( |\n|\t[ \n\t])/)
-      imp = @@imps[imp[1]]
-      p imp
-      break
+      if @program =~ /\A( |\n|\t[ \n\t])/
+        imp = Regexp.last_match(1)
+        p imp
+        @program.gsub!(/\A( |\n|\t[ \n\t])/, '')
+      else
+        fail Exception, 'undefind IMP'
+      end
+      # unless @program.gsub!(/\A( |\n|\t[ \n\t])/, '')
       # command
       # param
       # @result << imp << cmd << prm
