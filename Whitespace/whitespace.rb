@@ -110,7 +110,14 @@ class Tokenizer
   end
 
   def io
-    p 'io'
+    if @program =~ /\A( [ \t]|\t[ \t])/
+      @cmd = @@io[Regexp.last_match(1)]
+      @program.sub!(/\A( [ \t]|\t[ \t])/, '')
+      p @cmd
+      @result << @cmd
+    else
+      fail Exception, 'undefind io command'
+    end
   end
 
   def parameter
