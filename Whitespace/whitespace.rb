@@ -44,6 +44,8 @@ class Tokenizer
     '\t\t' => :readnum
   }
 
+  @@param = [:stack, :label, :cell, :jump, :jz, :jn]
+
   def initialize(program)
     @tokens = []
     @program = program.read
@@ -53,27 +55,44 @@ class Tokenizer
   def tokenize
     @result = []
     while @program.length > 0
-      # IMP
-      if @program =~ /\A( |\n|\t[ \n\t])/
-        @imp = @@imps[Regexp.last_match(1)]
-        p @imp
-        @program.sub!(/\A( |\n|\t[ \n\t])/, '')
+      imp
+      command
+      if @@param.include?(@imp)
+        parameter
+      end
+    end
+  end
+
+  def imp
+    if @program =~ /\A( |\n|\t[ \n\t])/
+      @imp = @@imps[Regexp.last_match(1)]
+      p @imp
+      @program.sub!(/\A( |\n|\t[ \n\t])/, '')
+    else
+      fail Exception, 'undefind IMP'
+    end
+  end
+
+  def command
+    case @imp
+    when :stack
+      if @program =~ /\A( |\n[ \t\n])/
+        @cmd = @@stack[Regexp.last_match(1)]
+        @program.sub!(/\A( |\n[ \t\n])/, '')
+        p @cmd
       else
-        fail Exception, 'undefind IMP'
+        fail Exception, 'undefind stack command'
       end
-      # command
-      case @imp
-      when :stack
-        if @program =~ /\A( |\n[ \t\n])/
-          @cmd = @@stack[Regexp.last_match(1)]
-          @program.sub!(/\A( |\n[ \t\n])/, '')
-          p @cmd
-        else
-          fail Exception, 'undefind stack command'
-        end
-      end
-      # param
-      # @result << imp << cmd << prm
+    end
+  end
+
+  def parameter
+    if @program =~ /([ \t]+\n)/
+      @param = Regexp.last_match(1)
+      p @param
+      @program.sub!(/([ \t]+\n)/, '')
+    else
+      fail Exception, 'undefind Parameters'
     end
   end
 end
