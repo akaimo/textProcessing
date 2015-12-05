@@ -7,6 +7,13 @@ class Tokenizer
     '\t\n' => :io
   }
 
+  @@stack = {
+    ' ' => :push,
+    '\n ' => :dup,
+    '\n\t' => :swap,
+    '\n\n' => :discard
+  }
+
   def initialize(program)
     @tokens = []
     @program = program.read
