@@ -106,7 +106,13 @@ class Tokenizer
   end
 
   def heap
-    p 'heap'
+    match = /\A( |\t)/
+    if @program =~ match
+      @cmd = @@heap[Regexp.last_match(1)]
+      @program.sub!(match, '')
+    else
+      fail Exception, 'undefind heap command'
+    end
   end
 
   def flow
