@@ -14,7 +14,7 @@ class Tokenizer
     '\n\n' => :discard
   }
 
-  @@arithmetics = {
+  @@arithmetic = {
     '  ' => :add,
     ' \t' => :sub,
     ' \n' => :mul,
@@ -78,16 +78,39 @@ class Tokenizer
 
   def command
     case @imp
-    when :stack
-      if @program =~ /\A( |\n[ \t\n])/
-        @cmd = @@stack[Regexp.last_match(1)]
-        @program.sub!(/\A( |\n[ \t\n])/, '')
-        p @cmd
-        @result << @cmd
-      else
-        fail Exception, 'undefind stack command'
-      end
+    when :stack then stack
+    when :arithmetic then arithmetic
+    when :heap then heap
+    when :flow then flow
+    when :io then io
     end
+  end
+
+  def stack
+    if @program =~ /\A( |\n[ \t\n])/
+      @cmd = @@stack[Regexp.last_match(1)]
+      @program.sub!(/\A( |\n[ \t\n])/, '')
+      p @cmd
+      @result << @cmd
+    else
+      fail Exception, 'undefind stack command'
+    end
+  end
+
+  def arithmetic
+    p 'arithmetic'
+  end
+
+  def heap
+    p 'heap'
+  end
+
+  def flow
+    p 'flow'
+  end
+
+  def io
+    p 'io'
   end
 
   def parameter
