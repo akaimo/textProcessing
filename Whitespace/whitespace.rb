@@ -44,7 +44,7 @@ class Tokenizer
     "\t\t" => :readnum
   }
 
-  @@param = [:stack, :label, :cell, :jump, :jz, :jn]
+  @@param = [:push, :label, :cell, :jump, :jz, :jn]
 
   def initialize(program)
     @tokens = []
@@ -57,7 +57,7 @@ class Tokenizer
     while @program.length > 0
       imp
       command
-      if @@param.include?(@imp)
+      if @@param.include?(@cmd)
         parameter
       end
     end
@@ -69,6 +69,7 @@ class Tokenizer
     match = /\A( |\n|\t[ \n\t])/
     if @program =~ match
       @imp = @@imps[Regexp.last_match(1)]
+      # p @imp
       @result << @imp
       @program.sub!(match, '')
     else
@@ -84,6 +85,7 @@ class Tokenizer
     when :flow then flow
     when :io then io
     end
+    # p @cmd
     @result << @cmd
   end
 
@@ -139,6 +141,7 @@ class Tokenizer
     match = /\A([ \t]+\n)/
     if @program =~ match
       @param = Regexp.last_match(1)
+      # p @param
       @result << @param
       @program.sub!(match, '')
     else
