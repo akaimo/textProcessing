@@ -66,11 +66,11 @@ class Tokenizer
   end
 
   def imp
-    if @program =~ /\A( |\n|\t[ \n\t])/
+    match = /\A( |\n|\t[ \n\t])/
+    if @program =~ match
       @imp = @@imps[Regexp.last_match(1)]
-      p @imp
       @result << @imp
-      @program.sub!(/\A( |\n|\t[ \n\t])/, '')
+      @program.sub!(match, '')
     else
       fail Exception, 'undefind IMP'
     end
@@ -84,21 +84,25 @@ class Tokenizer
     when :flow then flow
     when :io then io
     end
+    @result << @cmd
   end
 
   def stack
-    if @program =~ /\A( |\n[ \t\n])/
+    match = /\A( |\n[ \t\n])/
+    if @program =~ match
       @cmd = @@stack[Regexp.last_match(1)]
-      @program.sub!(/\A( |\n[ \t\n])/, '')
-      p @cmd
-      @result << @cmd
+      @program.sub!(match, '')
     else
       fail Exception, 'undefind stack command'
     end
   end
 
   def arithmetic
-    p 'arithmetic'
+    match = /\A( [ \t\n]|\t[ \t])/
+    if @program =~ match
+      @cmd = @@arithmetic[Regexp.last_match(1)]
+      @program.sub!(match, '')
+    end
   end
 
   def heap
@@ -110,22 +114,21 @@ class Tokenizer
   end
 
   def io
-    if @program =~ /\A( [ \t]|\t[ \t])/
+    match = /\A( [ \t]|\t[ \t])/
+    if @program =~ match
       @cmd = @@io[Regexp.last_match(1)]
-      @program.sub!(/\A( [ \t]|\t[ \t])/, '')
-      p @cmd
-      @result << @cmd
+      @program.sub!(match, '')
     else
       fail Exception, 'undefind io command'
     end
   end
 
   def parameter
-    if @program =~ /\A([ \t]+\n)/
+    match = /\A([ \t]+\n)/
+    if @program =~ match
       @param = Regexp.last_match(1)
-      p @param
       @result << @param
-      @program.sub!(/\A([ \t]+\n)/, '')
+      @program.sub!(match, '')
     else
       fail Exception, 'undefind Parameters'
     end
