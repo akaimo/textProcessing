@@ -61,12 +61,15 @@ class Tokenizer
         parameter
       end
     end
+
+    p @result
   end
 
   def imp
     if @program =~ /\A( |\n|\t[ \n\t])/
       @imp = @@imps[Regexp.last_match(1)]
       p @imp
+      @result << @imp
       @program.sub!(/\A( |\n|\t[ \n\t])/, '')
     else
       fail Exception, 'undefind IMP'
@@ -80,6 +83,7 @@ class Tokenizer
         @cmd = @@stack[Regexp.last_match(1)]
         @program.sub!(/\A( |\n[ \t\n])/, '')
         p @cmd
+        @result << @cmd
       else
         fail Exception, 'undefind stack command'
       end
@@ -90,6 +94,7 @@ class Tokenizer
     if @program =~ /([ \t]+\n)/
       @param = Regexp.last_match(1)
       p @param
+      @result << @param
       @program.sub!(/([ \t]+\n)/, '')
     else
       fail Exception, 'undefind Parameters'
