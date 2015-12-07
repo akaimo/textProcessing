@@ -48,7 +48,7 @@ class Tokenizer
 
   def initialize(program)
     @tokens = []
-    @program = program.read
+    @program = program.read.gsub(/[^ \t\n]/, '')
     tokenize
   end
 
