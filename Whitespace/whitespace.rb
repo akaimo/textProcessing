@@ -53,11 +53,11 @@ class Tokenizer
   def tokenize
     @result = []
     while @program.length > 0
+      @imp = nil; @cmd = nil; @param = nil
       imp
       command
-      if @@param.include?(@cmd)
-        parameter
-      end
+      parameter if @@param.include?(@cmd)
+      @result << [@imp, @cmd, @param]
     end
 
     p @result
@@ -68,7 +68,6 @@ class Tokenizer
     if @program =~ match
       @imp = @@imps[Regexp.last_match(1)]
       # p @imp
-      @result << @imp
       @program.sub!(match, '')
     else
       fail Exception, 'undefind IMP'
@@ -83,7 +82,6 @@ class Tokenizer
     @program.sub!(match, '')
     @cmd = @@cmd[@imp][Regexp.last_match(1)]
     # p @cmd
-    @result << @cmd
   end
 
   def parameter
@@ -91,7 +89,6 @@ class Tokenizer
     if @program =~ match
       @param = Regexp.last_match(1)
       # p @param
-      @result << @param
       @program.sub!(match, '')
     else
       fail Exception, 'undefind Parameters'
