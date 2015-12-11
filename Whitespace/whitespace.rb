@@ -44,6 +44,8 @@ class Tokenizer
 
   @@param = [:push, :label, :cell, :jump, :jz, :jn]
 
+  attr_reader :tokens
+
   def initialize(program)
     @tokens = []
     @program = program.read.gsub(/[^ \t\n]/, '')
@@ -51,16 +53,14 @@ class Tokenizer
   end
 
   def tokenize
-    @result = []
     while @program.length > 0
       @imp = nil; @cmd = nil; @param = nil
       imp
       command
       parameter if @@param.include?(@cmd)
-      @result << [@imp, @cmd, @param]
+      @tokens << [@imp, @cmd, @param]
     end
-
-    p @result
+    # p @tokens
   end
 
   def imp
@@ -88,10 +88,34 @@ class Tokenizer
     match = /\A([ \t]+\n)/
     if @program =~ match
       @param = Regexp.last_match(1)
-      # p @param
+      # p @pram
       @program.sub!(match, '')
     else
       fail Exception, 'undefind Parameters'
+    end
+  end
+end
+
+class Executor
+  def initialize(tokens)
+    @tokens = tokens
+  end
+
+  def run
+    @pc = 0
+    @stack = []
+    @heap = {}
+    @call = []
+    loop do
+      imp, cmd, parm = @tokens[@pc]
+      @pc += 1
+      exit if @tokens.count < @pc
+      case cmd
+      when :push then @stack.push parm
+      when :dup then @stack.push @stack[-1]
+      when :swap then @stack[-1], @stack[-2] = @stack[-2], @stack[-1]
+      when :discard then @stack.pop
+      end
     end
   end
 end
@@ -109,4 +133,4 @@ rescue => ex
   exit
 end
 
-Tokenizer.new(file)
+Executor.new(Tokenizer.new(file).tokens).run
