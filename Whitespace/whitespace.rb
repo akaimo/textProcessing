@@ -121,6 +121,12 @@ class Executor
       when :mul then arithmetic('*')
       when :div then arithmetic('/')
       when :mod then arithmetic('%')
+
+      when :store
+        value = @stack.pop
+        address = @stack.pop
+        @heap[address] = value
+      when :retrive then @stack.push @heap[@stack.pop]
       end
     end
   end
