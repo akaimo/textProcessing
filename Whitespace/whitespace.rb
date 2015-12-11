@@ -87,12 +87,7 @@ class Tokenizer
   def parameter
     match = /\A([ \t]+\n)/
     if @program =~ match
-      if @cmd == :push
-        @param = eval("0b#{$1[1..-1].tr(" \t", '01')}")
-        @param *= -1 if ($1[0] == ?\t)
-      else
-        @param = eval("0b#{Regexp.last_match(1).tr(" \t", '01')}")
-      end
+      @param = eval("0b#{Regexp.last_match(1).tr(" \t", '01')}")
       # p @pram
       @program.sub!(match, '')
     else
