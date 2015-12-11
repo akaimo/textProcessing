@@ -27,7 +27,7 @@ class Tokenizer
     },
     flow: {
       '  ' => :label,
-      " \t" => :cell,
+      " \t" => :call,
       " \n" => :jump,
       "\t " => :jz,
       "\t\t" => :jn,
@@ -42,7 +42,7 @@ class Tokenizer
     }
   }
 
-  @@param = [:push, :label, :cell, :jump, :jz, :jn]
+  @@param = [:push, :label, :call, :jump, :jz, :jn]
 
   attr_reader :tokens
 
@@ -125,7 +125,7 @@ class Executor
       when :retrive then @stack.push @heap[@stack.pop]
 
       when :label
-      when :cell
+      when :call
         @call.push(@pc)
         jump(parm)
       when :jump then jump(parm)
