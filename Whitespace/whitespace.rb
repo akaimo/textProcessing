@@ -127,12 +127,31 @@ class Executor
         address = @stack.pop
         @heap[address] = value
       when :retrive then @stack.push @heap[@stack.pop]
+
+      when :label
+      when :cell
+        @call.push(@pc)
+        jump(parm)
+      when :jump then jump(parm)
+      when :jz then jump(parm) if @stack.pop == 0
+      when :jn then jump(parm) if @stack.pop < 0
+      when :ret then @pc = @call.pop
+      when :exit then exit
       end
     end
   end
 
   def arithmetic(op)
     @stack.push eval('@stack.pop #{op} @stack.pop')
+  end
+
+  def jump(label)
+    @tokens.each_with_index do |token, i|
+      if token == [:flow, :label, label]
+        @pc = i
+        break
+      end
+    end
   end
 end
 
