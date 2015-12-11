@@ -60,14 +60,12 @@ class Tokenizer
       parameter if @@param.include?(@cmd)
       @tokens << [@imp, @cmd, @param]
     end
-    # p @tokens
   end
 
   def imp
     match = /\A( |\n|\t[ \n\t])/
     if @program =~ match
       @imp = @@imps[Regexp.last_match(1)]
-      # p @imp
       @program.sub!(match, '')
     else
       fail Exception, 'undefind IMP'
@@ -81,14 +79,12 @@ class Tokenizer
     end
     @program.sub!(match, '')
     @cmd = @@cmd[@imp][Regexp.last_match(1)]
-    # p @cmd
   end
 
   def parameter
     match = /\A([ \t]+\n)/
     if @program =~ match
       @param = eval("0b#{Regexp.last_match(1).tr(" \t", '01')}")
-      # p @pram
       @program.sub!(match, '')
     else
       fail Exception, 'undefind Parameters'
@@ -143,7 +139,7 @@ class Executor
       when :readchar then @heap[@stack.pop] = $stdin.gets
       when :readnum then @heap[@stack.pop] = $stdin.gets.to_i
 
-      else fail Exception, 'Unknown'
+      else fail Exception, 'Executor faild'
       end
     end
   end
