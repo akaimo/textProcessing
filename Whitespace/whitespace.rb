@@ -87,7 +87,12 @@ class Tokenizer
   def parameter
     match = /\A([ \t]+\n)/
     if @program =~ match
-      @param = Regexp.last_match(1)
+      if @cmd == :push
+        @param = eval("0b#{$1[1..-1].tr(" \t", '01')}")
+        @param *= -1 if ($1[0] == ?\t)
+      else
+        @param = eval("0b#{Regexp.last_match(1).tr(" \t", '01')}")
+      end
       # p @pram
       @program.sub!(match, '')
     else
@@ -107,7 +112,7 @@ class Executor
     @heap = {}
     @call = []
     loop do
-      imp, cmd, parm = @tokens[@pc]
+      _, cmd, parm = @tokens[@pc]
       @pc += 1
       exit if @tokens.count < @pc
       case cmd
@@ -137,12 +142,21 @@ class Executor
       when :jn then jump(parm) if @stack.pop < 0
       when :ret then @pc = @call.pop
       when :exit then exit
+
+      when :outchar then print @stack.pop.chr
+      when :outnum then print @stack.pop
+      when :readchar then @heap[@stack.pop] = $stdin.gets
+      when :readnum then @heap[@stack.pop] = $stdin.gets.to_i
+
+      else fail Exception, 'Unknown'
       end
     end
   end
 
   def arithmetic(op)
-    @stack.push eval('@stack.pop #{op} @stack.pop')
+    b = @stack.pop
+    a = @stack.pop
+    @stack.push eval("a #{op} b")
   end
 
   def jump(label)
