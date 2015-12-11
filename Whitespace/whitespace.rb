@@ -115,8 +115,18 @@ class Executor
       when :dup then @stack.push @stack[-1]
       when :swap then @stack[-1], @stack[-2] = @stack[-2], @stack[-1]
       when :discard then @stack.pop
+
+      when :add then arithmetic('+')
+      when :sub then arithmetic('-')
+      when :mul then arithmetic('*')
+      when :div then arithmetic('/')
+      when :mod then arithmetic('%')
       end
     end
+  end
+
+  def arithmetic(op)
+    @stack.push eval('@stack.pop #{op} @stack.pop')
   end
 end
 
