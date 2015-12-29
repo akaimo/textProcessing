@@ -14,3 +14,4 @@ Linuxのエディタedの主要なコマンドを実装
 
 ### Whitespace
 Whitespaceのインタプリタを実装
+http://compsoc.dur.ac.uk/whitespace/tutorial.html
