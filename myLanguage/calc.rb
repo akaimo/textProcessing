@@ -16,7 +16,7 @@ class Calc
   end
 
   def get_token()
-    if @code =~ /\A\s*(#{@@keywords.keys.map{|t|Regexp.escape(t)}.join('|')})/
+    if @code =~ /\A\s*(#{@@keywords.keys.map { |t| Regexp.escape(t) } .join('|')})/
       @code = $'
       return @@keywords[$1]
     elsif @code =~ /\A\s*([0-9.]+)/
@@ -38,7 +38,7 @@ class Calc
 
   def expression()
     result = term
-    while true
+    loop do
       token = get_token()
       unless token == :add || token == :sub
         unget_token(token)
