@@ -37,14 +37,14 @@ class Calc
   end
 
   def expression()
-    result = term
+    result = term()
     loop do
       token = get_token()
       unless token == :add || token == :sub
         unget_token(token)
         break
       end
-      result = [token, result, term]
+      result = [token, result, term()]
     end
     result
   end
@@ -57,7 +57,7 @@ class Calc
         unget_token(token)
         break
       end
-      result = [token, result, factor]
+      result = [token, result, factor()]
     end
     result
   end
