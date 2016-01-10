@@ -7,7 +7,8 @@ class Calc
     '%' => :mod,
     '(' => :lpar,
     ')' => :rpar,
-    'print' => :print
+    'print' => :print,
+    '"' => :dQuot
   }
 
   attr_accessor :code
@@ -23,6 +24,9 @@ class Calc
     elsif @code =~ /\A\s*([0-9.]+)/
       @code = $'
       return $1.to_f
+    elsif @code =~ /\A\s*(\w+)/
+      @code = $'
+      return $1.to_s
     elsif @code =~ /\A\s*\z/
       return nil
     end
@@ -64,14 +68,18 @@ class Calc
   end
 
   def call()
-    unless get_token() == :lpar
-      fail Exception, 'unexpected token'
+    fail Exception, 'unexpected token' unless get_token() == :lpar
+    token = get_token()
+    if token == :dQuot
+      result = get_token
+      fail Exception, 'unexpected token' unless get_token() == :dQuot
+      return result
+    else
+      unget_token(token)
     end
     result = expression()
-    unless get_token() == :rpar
-      fail Exception, 'unexpected token'
-    end
-    result
+    fail Exception, 'unexpected token' unless get_token() == :rpar
+    return result
   end
 
   def factor()
