@@ -71,8 +71,12 @@ class Calc
     fail Exception, 'unexpected token' unless get_token() == :lpar
     token = get_token()
     if token == :dQuot
-      result = get_token
+      if @code =~ /\A\s*(.+)(")/
+        @code = $2 + $'
+        result = $1.to_s
+      end
       fail Exception, 'unexpected token' unless get_token() == :dQuot
+      fail Exception, 'unexpected token' unless get_token() == :rpar
       return result
     else
       unget_token(token)
@@ -120,10 +124,22 @@ class Calc
 end
 
 calc = Calc.new
+begin
+  File.open(ARGV[0]) do |file|
+    calc.code = file.read
+  end
+rescue => ex
+  puts 'file not open'
+  exit
+end
+
+ex = []
 loop do
-  print 'exp> '
-  calc.code = STDIN.gets
-  exit if calc.code == "quit\n"
-  ex = calc.expression()
-  calc.eval(ex)
+  break if calc.code == "\n"
+  ex << calc.expression()
+end
+# p ex
+
+ex.each do |e|
+  calc.eval(e)
 end
