@@ -6,7 +6,8 @@ class Calc
     '/' => :div,
     '%' => :mod,
     '(' => :lpar,
-    ')' => :rpar
+    ')' => :rpar,
+    'print' => :print
   }
 
   attr_accessor :code
@@ -62,6 +63,17 @@ class Calc
     result
   end
 
+  def call()
+    unless get_token() == :lpar
+      fail Exception, 'unexpected token'
+    end
+    result = expression()
+    unless get_token() == :rpar
+      fail Exception, 'unexpected token'
+    end
+    result
+  end
+
   def factor()
     token = get_token()
     minusflg = 1
@@ -77,6 +89,8 @@ class Calc
         fail Exception, 'unexpected token'
       end
       return [:mul, minusflg, result]
+    elsif token == :print
+      return [:print, call()]
     else
       fail Exception, 'unexpected token'
     end
@@ -89,6 +103,7 @@ class Calc
       when :sub then return eval(exp[1]) - eval(exp[2])
       when :mul then return eval(exp[1]) * eval(exp[2])
       when :div then return eval(exp[1]) / eval(exp[2])
+      when :print then p eval(exp[1])
       end
     else
       return exp
@@ -102,5 +117,5 @@ loop do
   calc.code = STDIN.gets
   exit if calc.code == "quit\n"
   ex = calc.expression()
-  p calc.eval(ex)
+  calc.eval(ex)
 end
