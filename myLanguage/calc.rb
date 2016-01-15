@@ -108,6 +108,20 @@ class Calc
     end
   end
 
+  def sentences()
+    @result = []
+    loop do
+      break if @code == "\n" || @code == ''
+      @result << expression()
+    end
+  end
+
+  def evaluate()
+    @result.each do |e|
+      self.eval(e)
+    end
+  end
+
   def eval(exp)
     if exp.instance_of?(Array)
       case exp[0]
@@ -133,13 +147,5 @@ rescue => ex
   exit
 end
 
-ex = []
-loop do
-  break if calc.code == "\n"
-  ex << calc.expression()
-end
-# p ex
-
-ex.each do |e|
-  calc.eval(e)
-end
+calc.sentences()
+calc.evaluate()
