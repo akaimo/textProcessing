@@ -83,7 +83,7 @@ class Calc
     end
     result = expression()
     fail Exception, 'unexpected token' unless get_token() == :rpar
-    return result
+    result
   end
 
   def factor()
