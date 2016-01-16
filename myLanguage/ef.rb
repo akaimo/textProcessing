@@ -15,6 +15,7 @@ class Ef
 
   def initialize()
     @code = ''
+    @space = {}
   end
 
   def get_token()
@@ -24,6 +25,9 @@ class Ef
     elsif @code =~ /\A\s*([0-9.]+)/
       @code = $'
       return $1.to_f
+    elsif @code =~ /\A\s*([a-zA-z]\w*)/
+      @code = $'
+      return $1.to_s
     elsif @code =~ /\A\s*(\w+)/
       @code = $'
       return $1.to_s
@@ -37,7 +41,7 @@ class Ef
     if token.is_a? Numeric
       @code = token.to_s + @code
     else
-      @code = @@keywords.key(token) ? @@keywords.key(token) + @code : @code
+      @code = @@keywords.key(token) ? @@keywords.key(token) + @code : token + @code
     end
   end
 
@@ -106,6 +110,17 @@ class Ef
     end
   end
 
+  def assign()
+    vari = get_token()
+    if @code =~ /\A\s*(=)/
+      @code = $'
+    else
+      fail Exception, "can not find '='"
+    end
+    x = get_token()
+    return [vari, x]
+  end
+
   def sentences()
     @result = []
     loop do
@@ -120,15 +135,23 @@ class Ef
       unget_token(token)
       return expression()
     end
+
+    if token =~ /\A\s*([a-zA-z]\w*)/ && !token.instance_of?(Symbol)
+      unget_token(token)
+      return [:assignment, assign()]
+    end
+
     case token
     when :print then return [:print, call()]
     end
   end
 
   def evaluate()
+    p @result
     @result.each do |e|
       eval(e)
     end
+    p @space
   end
 
   def eval(exp)
@@ -139,6 +162,7 @@ class Ef
       when :mul then return eval(exp[1]) * eval(exp[2])
       when :div then return eval(exp[1]) / eval(exp[2])
       when :print then p eval(exp[1])
+      when :assignment then @space[exp[1][0]] = exp[1][1]
       end
     else
       return exp
