@@ -74,18 +74,20 @@ class Ef
   def call()
     fail Exception, 'unexpected token' unless get_token() == :lpar
     token = get_token()
+
     if token == :dQuot
       if @code =~ /\A\s*(.+)(")/
         @code = $2 + $'
         result = $1.to_s
       end
       fail Exception, 'unexpected token' unless get_token() == :dQuot
-      fail Exception, 'unexpected token' unless get_token() == :rpar
-      return result
-    else
+    elsif token.is_a? Numeric
       unget_token(token)
+      result = sentence()
+    else
+      result = [:variable, token]
     end
-    result = sentence()
+
     fail Exception, 'unexpected token' unless get_token() == :rpar
     return result
   end
@@ -131,11 +133,14 @@ class Ef
 
   def sentence()
     token = get_token()
+
+    # 計算
     if token.is_a? Numeric
       unget_token(token)
       return expression()
     end
 
+    # 変数
     if token =~ /\A\s*([a-zA-z]\w*)/ && !token.instance_of?(Symbol)
       unget_token(token)
       return [:assignment, assign()]
@@ -163,6 +168,7 @@ class Ef
       when :div then return eval(exp[1]) / eval(exp[2])
       when :print then p eval(exp[1])
       when :assignment then @space[exp[1][0]] = exp[1][1]
+      when :variable then @space[exp[1]] ? @space[exp[1]] : '0'
       end
     else
       return exp
