@@ -81,7 +81,7 @@ class Calc
     else
       unget_token(token)
     end
-    result = expression()
+    result = sentence()
     fail Exception, 'unexpected token' unless get_token() == :rpar
     result
   end
@@ -101,8 +101,6 @@ class Calc
         fail Exception, 'unexpected token'
       end
       return [:mul, minusflg, result]
-    elsif token == :print
-      return [:print, call()]
     else
       fail Exception, 'unexpected token'
     end
@@ -112,13 +110,24 @@ class Calc
     @result = []
     loop do
       break if @code == "\n" || @code == ''
-      @result << expression()
+      @result << sentence()
+    end
+  end
+
+  def sentence()
+    token = get_token()
+    if token.is_a? Numeric
+      unget_token(token)
+      return expression()
+    end
+    case token
+    when :print then return [:print, call()]
     end
   end
 
   def evaluate()
     @result.each do |e|
-      self.eval(e)
+      eval(e)
     end
   end
 
