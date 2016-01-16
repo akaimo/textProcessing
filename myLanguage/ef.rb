@@ -74,6 +74,8 @@ class Ef
   def call()
     fail Exception, 'unexpected token' unless get_token() == :lpar
     token = get_token()
+    token2 = get_token
+    unget_token(token2) unless token2 == :bad_token
 
     if token == :dQuot
       if @code =~ /\A\s*(.+)(")/
@@ -81,7 +83,7 @@ class Ef
         result = $1.to_s
       end
       fail Exception, 'unexpected token' unless get_token() == :dQuot
-    elsif token.is_a? Numeric
+    elsif token.is_a?(Numeric) || token2 == :add || token2 == :sub || token2 == :mul || token2 == :div
       unget_token(token)
       result = sentence()
     else
@@ -108,7 +110,7 @@ class Ef
       end
       return [:mul, minusflg, result]
     else
-      fail Exception, 'unexpected token'
+      return [:variable, token]
     end
   end
 
@@ -119,8 +121,7 @@ class Ef
     else
       fail Exception, "can not find '='"
     end
-    x = get_token()
-    return [vari, x]
+    return [vari, sentence()]
   end
 
   def sentences()
@@ -135,7 +136,9 @@ class Ef
     token = get_token()
 
     # 計算
-    if token.is_a? Numeric
+    token2 = get_token()
+    unget_token(token2) unless token2 == :bad_token
+    if token.is_a?(Numeric) || token2 == :add || token2 == :sub || token2 == :mul || token2 == :div
       unget_token(token)
       return expression()
     end
@@ -152,7 +155,7 @@ class Ef
   end
 
   def evaluate()
-    p @result
+    # p @result
     @result.each do |e|
       eval(e)
     end
@@ -168,7 +171,7 @@ class Ef
       when :div then return eval(exp[1]) / eval(exp[2])
       when :print then p eval(exp[1])
       when :assignment then @space[exp[1][0]] = exp[1][1]
-      when :variable then @space[exp[1]] ? @space[exp[1]] : '0'
+      when :variable then @space[exp[1]] ? eval(@space[exp[1]]) : '0'
       end
     else
       return exp

@@ -1,2 +1,6 @@
 x = 3
+y = 3 * 2
+z = x + 5 * y
 print(x)
+print(y)
+print(z)
