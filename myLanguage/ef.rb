@@ -1,4 +1,4 @@
-class Calc
+class Ef
   @@keywords = {
     '+' => :add,
     '-' => :sub,
@@ -146,15 +146,15 @@ class Calc
   end
 end
 
-calc = Calc.new
+ef = Ef.new
 begin
   File.open(ARGV[0]) do |file|
-    calc.code = file.read
+    ef.code = file.read
   end
 rescue => ex
   puts 'file not open'
   exit
 end
 
-calc.sentences()
-calc.evaluate()
+ef.sentences()
+ef.evaluate()
