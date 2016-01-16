@@ -13,7 +13,7 @@ class Ef
 
   attr_accessor :code
 
-  def initialize
+  def initialize()
     @code = ''
   end
 
@@ -30,7 +30,7 @@ class Ef
     elsif @code =~ /\A\s*\z/
       return nil
     end
-    :bad_token
+    return :bad_token
   end
 
   def unget_token(token)
@@ -51,7 +51,7 @@ class Ef
       end
       result = [token, result, term()]
     end
-    result
+    return result
   end
 
   def term()
@@ -64,7 +64,7 @@ class Ef
       end
       result = [token, result, factor()]
     end
-    result
+    return result
   end
 
   def call()
@@ -83,7 +83,7 @@ class Ef
     end
     result = sentence()
     fail Exception, 'unexpected token' unless get_token() == :rpar
-    result
+    return result
   end
 
   def factor()
@@ -151,7 +151,7 @@ begin
   File.open(ARGV[0]) do |file|
     ef.code = file.read
   end
-rescue => ex
+rescue
   puts 'file not open'
   exit
 end
