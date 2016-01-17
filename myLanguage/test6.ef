@@ -1,0 +1,6 @@
+x = 5
+if 6 {
+  print("ok")
+  print("if")
+}
+x = 7

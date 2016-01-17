@@ -8,7 +8,10 @@ class Ef
     '(' => :lpar,
     ')' => :rpar,
     'print' => :print,
-    '"' => :dQuot
+    '"' => :dQuot,
+    'if' => :if,
+    '{' => :lwave,
+    '}' => :rwave
   }
 
   attr_accessor :code
@@ -38,6 +41,7 @@ class Ef
   end
 
   def unget_token(token)
+    return if token == :bad_token || token == nil
     if token.is_a? Numeric
       @code = token.to_s + @code
     else
@@ -75,7 +79,7 @@ class Ef
     fail Exception, "can not find '('" unless get_token() == :lpar
     token = get_token()
     token2 = get_token
-    unget_token(token2) unless token2 == :bad_token
+    unget_token(token2)
 
     if token == :dQuot
       if @code =~ /\A\s*(.+)(")/
@@ -146,6 +150,43 @@ class Ef
     return [vari, sentence()]
   end
 
+  def myIf()
+    condition = ''
+    if @code =~ /\A\s*(.+)(\s+{)/
+      @code = $2 + $'
+      condition = $1
+    end
+    condition = judge(condition)
+    # p condition
+
+    fail Exception, "can not find '{'" unless get_token() == :lwave
+    block = ''
+    if @code =~ /\A\s*(.*)(})/m
+      @code = $2 + $'
+      block = $1
+    end
+    # p block
+    fail Exception "can not find '}'" unless get_token() == :rwave
+
+    code, result = @code, @result
+    @code = block
+    sentences()
+    block = @result
+    @code, @result = code, result
+    block.unshift(:block)
+    # p block
+
+    return [:if, condition, block]
+  end
+
+  def judge(condition)
+    if condition =~ /\d+/
+      return [:crndition, condition.to_f]
+    else
+      return [:condition, [:variable, condition]]
+    end
+  end
+
   def sentences()
     @result = []
     loop do
@@ -159,7 +200,7 @@ class Ef
 
     # 計算
     token2 = get_token()
-    unget_token(token2) unless token2 == :bad_token
+    unget_token(token2)
     if token.is_a?(Numeric) || token2 == :add || token2 == :sub || token2 == :mul || token2 == :div
       unget_token(token)
       return expression()
@@ -173,11 +214,12 @@ class Ef
 
     case token
     when :print then return [:print, call()]
+    when :if then return myIf()
     end
   end
 
   def evaluate()
-    # p @result
+    p @result
     @result.each do |e|
       eval(e)
     end
