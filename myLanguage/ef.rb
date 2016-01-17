@@ -72,7 +72,7 @@ class Ef
   end
 
   def call()
-    fail Exception, 'unexpected token' unless get_token() == :lpar
+    fail Exception, "can not find '('" unless get_token() == :lpar
     token = get_token()
     token2 = get_token
     unget_token(token2) unless token2 == :bad_token
@@ -82,7 +82,7 @@ class Ef
         @code = $2 + $'
         result = $1.to_s
       end
-      fail Exception, 'unexpected token' unless get_token() == :dQuot
+      fail Exception, 'can not find `"`' unless get_token() == :dQuot
     elsif token.is_a?(Numeric) || token2 == :add || token2 == :sub || token2 == :mul || token2 == :div
       unget_token(token)
       result = sentence()
@@ -90,17 +90,19 @@ class Ef
       result = [:variable, token]
     end
 
-    fail Exception, 'unexpected token' unless get_token() == :rpar
+    fail Exception, "can not find ')'" unless get_token() == :rpar
     return result
   end
 
   def factor()
     token = get_token()
     minusflg = 1
+
     if token == :sub
       minusflg = -1
       token = get_token()
     end
+
     if token.is_a? Numeric
       return token * minusflg
     elsif token == :lpar
@@ -109,7 +111,14 @@ class Ef
         fail Exception, 'unexpected token'
       end
       return [:mul, minusflg, result]
-    else
+    elsif token == :dQuot  # 文字列の計算
+      if @code =~ /\A\s*(.+)(")/
+        @code = $2 + $'
+        result = $1.to_s
+      end
+      fail Exception, 'can not find `"`' unless get_token == :dQuot
+      return result
+    else  # 変数の計算
       return [:variable, token]
     end
   end
