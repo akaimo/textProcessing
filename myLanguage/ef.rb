@@ -121,6 +121,19 @@ class Ef
     else
       fail Exception, "can not find '='"
     end
+
+    token = get_token()
+    if token == :dQuot
+      if @code =~ /\A\s*(.+)(")/
+        @code = $2 + $'
+        result = $1.to_s
+      end
+      fail Exception, 'can not find `"`' unless get_token() == :dQuot
+      return [vari, result]
+    else
+      unget_token(token)
+    end
+
     return [vari, sentence()]
   end
 
