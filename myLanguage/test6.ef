@@ -1,5 +1,6 @@
 x = 5
-if 6 {
+y = "ef"
+if "hoge" {
   print("ok")
   print("if")
 }

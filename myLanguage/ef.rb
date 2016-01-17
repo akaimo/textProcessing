@@ -180,11 +180,26 @@ class Ef
   end
 
   def judge(condition)
-    if condition =~ /\d+/
-      return [:crndition, condition.to_f]
+    code, result = @code, @result
+    @code = condition
+
+    token = get_token()
+    token2 = get_token()
+    unget_token(token2)
+    unget_token(token)
+
+    if token.is_a?(Numeric) || token2 == :add || token2 == :sub || token2 == :mul || token2 == :div
+      sentences()
+      condition = @result
+    elsif token == :dQuot
+      condition = [token2]
     else
-      return [:condition, [:variable, condition]]
+      condition = [[:variable, condition]]
     end
+
+    @code, @result = code, result
+    condition.unshift(:condition)
+    return condition
   end
 
   def sentences()
@@ -219,7 +234,7 @@ class Ef
   end
 
   def evaluate()
-    p @result
+    # p @result
     @result.each do |e|
       eval(e)
     end
@@ -236,9 +251,32 @@ class Ef
       when :print then p eval(exp[1])
       when :assignment then @space[exp[1][0]] = exp[1][1]
       when :variable then @space[exp[1]] ? eval(@space[exp[1]]) : '0'
+      when :if then e_if(exp[1], exp[2])
+      when :condition then e_cond(exp[1])
       end
     else
       return exp
+    end
+  end
+
+  def e_if(condition, block)
+    p condition
+    p block
+    c = e_cond(condition)
+    p c
+  end
+
+  def e_cond(condition)
+    result = eval(condition[1])
+    p result
+    if result.to_s =~ /\d+/
+      if result.to_f == 0.0
+        return false
+      else
+        return true
+      end
+    else
+      return true
     end
   end
 end
