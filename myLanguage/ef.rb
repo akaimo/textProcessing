@@ -152,7 +152,7 @@ class Ef
 
   def myIf()
     condition = ''
-    if @code =~ /\A\s*(.+)(\s+{)/
+    if @code =~ /\A\s*(.+)(\s+\{)/
       @code = $2 + $'
       condition = $1
     end
