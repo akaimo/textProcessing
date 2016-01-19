@@ -111,9 +111,7 @@ class Ef
       return token * minusflg
     elsif token == :lpar
       result = expression()
-      unless get_token() == :rpar
-        fail Exception, 'unexpected token'
-      end
+      fail Exception, 'unexpected token' unless get_token() == :rpar
       return [:mul, minusflg, result]
     elsif token == :dQuot  # 文字列の計算
       if @code =~ /\A\s*(.+)(")/
