@@ -149,13 +149,15 @@ class Ef
   end
 
   def myIf()
+    # TODO: 対応する括弧の取得ができていないので、一つのブロック内に一つの括弧しか書けない
+    # 現状は一番最後の括弧を取得している
+    # ifが2回続いたりすると解析できない
     condition = ''
     if @code =~ /\A\s*(.+)(\s+\{)/
       @code = $2 + $'
       condition = $1
     end
     condition = judge(condition)
-    # p condition
 
     fail Exception, "can not find '{'" unless get_token() == :lwave
     block = ''
@@ -163,8 +165,7 @@ class Ef
       @code = $2 + $'
       block = $1
     end
-    # p block
-    fail Exception "can not find '}'" unless get_token() == :rwave
+    fail Exception, "can not find '}'" unless get_token() == :rwave
 
     code, result = @code, @result
     @code = block
@@ -172,7 +173,6 @@ class Ef
     block = @result
     @code, @result = code, result
     block.unshift(:block)
-    # p block
 
     return [:if, condition, block]
   end
@@ -203,7 +203,7 @@ class Ef
   def sentences()
     @result = []
     loop do
-      break if @code == "\n" || @code == ''
+      break if @code =~ /\A\s+\z/ || @code == ''
       @result << sentence()
     end
   end
@@ -232,7 +232,6 @@ class Ef
   end
 
   def evaluate()
-    # p @result
     @result.each do |e|
       eval(e)
     end
@@ -250,7 +249,9 @@ class Ef
       when :assignment then @space[exp[1][0]] = exp[1][1]
       when :variable then @space[exp[1]] ? eval(@space[exp[1]]) : '0'
       when :if then e_if(exp[1], exp[2])
-      when :condition then e_cond(exp[1])
+        when :condition then e_cond(exp[1])
+        when :block
+          e_block(exp)
       end
     else
       return exp
@@ -258,15 +259,14 @@ class Ef
   end
 
   def e_if(condition, block)
-    p condition
-    p block
     c = e_cond(condition)
-    p c
+    if c
+      eval(block)
+    end
   end
 
   def e_cond(condition)
     result = eval(condition[1])
-    p result
     if result.to_s =~ /\d+/
       if result.to_f == 0.0
         return false
@@ -276,6 +276,12 @@ class Ef
     else
       return true
     end
+  end
+
+  def e_block(block)
+    block.each { |b|
+      eval(b)
+    }
   end
 end
 

@@ -1,7 +1,11 @@
 x = 5
 y = "ef"
-if "hoge" {
-  print("ok")
+if x {
+  comment = "ok"
+  print(comment)
   print("if")
+  if 3 {
+    print("hoge")
+  }
 }
 x = 7
