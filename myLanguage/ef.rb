@@ -49,27 +49,27 @@ class Ef
 
   def expression()
     result = term()
-    loop do
+    loop {
       token = get_token()
       unless token == :add || token == :sub
         unget_token(token)
         break
       end
       result = [token, result, term()]
-    end
+    }
     return result
   end
 
   def term()
     result = factor()
-    loop do
+    loop {
       token = get_token()
       unless token == :mul || token == :div
         unget_token(token)
         break
       end
       result = [token, result, factor()]
-    end
+    }
     return result
   end
 
@@ -210,10 +210,10 @@ class Ef
 
   def sentences()
     @result = []
-    loop do
+    loop {
       break if @code =~ /\A\s+\z/ || @code == ''
       @result << sentence()
-    end
+    }
   end
 
   def sentence()
@@ -234,31 +234,42 @@ class Ef
     end
 
     case token
-    when :print then return [:print, call()]
-    when :if then return myIf()
+      when :print
+        return [:print, call()]
+      when :if
+        return myIf()
     end
   end
 
   def evaluate()
     # p @result
-    @result.each do |e|
+    @result.each { |e|
       eval(e)
-    end
+    }
     p @space
   end
 
   def eval(exp)
     if exp.instance_of?(Array)
       case exp[0]
-      when :add then return eval(exp[1]) + eval(exp[2])
-      when :sub then return eval(exp[1]) - eval(exp[2])
-      when :mul then return eval(exp[1]) * eval(exp[2])
-      when :div then return eval(exp[1]) / eval(exp[2])
-      when :print then p eval(exp[1])
-      when :assignment then @space[exp[1][0]] = exp[1][1]
-      when :variable then @space[exp[1]] ? eval(@space[exp[1]]) : '0'
-      when :if then e_if(exp[1], exp[2])
-        when :condition then e_cond(exp[1])
+        when :add
+          return eval(exp[1]) + eval(exp[2])
+        when :sub
+          return eval(exp[1]) - eval(exp[2])
+        when :mul
+          return eval(exp[1]) * eval(exp[2])
+        when :div
+          return eval(exp[1]) / eval(exp[2])
+        when :print
+          p eval(exp[1])
+        when :assignment
+          @space[exp[1][0]] = exp[1][1]
+        when :variable
+          @space[exp[1]] ? eval(@space[exp[1]]) : '0'
+        when :if
+          e_if(exp[1], exp[2])
+        when :condition
+          e_cond(exp[1])
         when :block
           e_block(exp)
       end
@@ -296,9 +307,9 @@ end
 
 ef = Ef.new
 begin
-  File.open(ARGV[0]) do |file|
+  File.open(ARGV[0]) { |file|
     ef.code = file.read
-  end
+  }
 rescue
   puts 'file not open'
   exit
