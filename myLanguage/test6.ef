@@ -5,7 +5,10 @@ if x {
   print(comment)
   print("if")
   if 3 {
-    print("hoge")
+    print("ef")
+  }
+  if 0 {
+    print("no")
   }
 }
 x = 7

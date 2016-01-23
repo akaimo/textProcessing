@@ -9,9 +9,7 @@ class Ef
     ')' => :rpar,
     'print' => :print,
     '"' => :dQuot,
-    'if' => :if,
-    '{' => :lwave,
-    '}' => :rwave
+    'if' => :if
   }
 
   attr_accessor :code
@@ -149,23 +147,33 @@ class Ef
   end
 
   def myIf()
-    # TODO: 対応する括弧の取得ができていないので、一つのブロック内に一つの括弧しか書けない
-    # 現状は一番最後の括弧を取得している
-    # ifが2回続いたりすると解析できない
     condition = ''
-    if @code =~ /\A\s*(.+)(\s+\{)/
+    if @code =~ /\A\s*(.+)(\s+{)/
       @code = $2 + $'
       condition = $1
     end
     condition = judge(condition)
 
-    fail Exception, "can not find '{'" unless get_token() == :lwave
     block = ''
-    if @code =~ /\A\s*(.*)(})/m
-      @code = $2 + $'
+    if @code =~ /(?<paren>{(?:[^{}]|\g<paren>)*})/
       block = $1
+      @code = $'
+
+      if block =~ /({)/
+        block = $'
+      else
+        fail Exception, "can not find '{'"
+      end
+
+      if block =~ /\A\s*(.+)(})/m
+        block = $1
+      else
+        fail Exception, "can not find '}'"
+      end
+
+    else
+      fail Exception, "can not find '{}'"
     end
-    fail Exception, "can not find '}'" unless get_token() == :rwave
 
     code, result = @code, @result
     @code = block
@@ -232,6 +240,7 @@ class Ef
   end
 
   def evaluate()
+    # p @result
     @result.each do |e|
       eval(e)
     end
