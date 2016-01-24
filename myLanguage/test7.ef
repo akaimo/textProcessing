@@ -1,5 +1,5 @@
 x = 5
-if x {
+for y in 0...3 {
   print("ok")
 }
 print("end")

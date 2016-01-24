@@ -9,7 +9,9 @@ class Ef
     ')' => :rpar,
     'print' => :print,
     '"' => :dQuot,
-    'if' => :if
+    'if' => :if,
+    'for' => :for,
+    'in' => :in
   }
 
   attr_accessor :code
@@ -147,13 +149,13 @@ class Ef
   end
 
   def myIf()
-    condition = ''
-    if @code =~ /\A\s*(.+)(\s+{)/
-      @code = $2 + $'
-      condition = $1
-    end
-    condition = judge(condition)
+    condition = get_l_brace_sentence()
 
+    return [:if, judge(condition), s_block()]
+  end
+
+  # blockの中身を取得
+  def s_block()
     block = ''
     if @code =~ /(?<paren>{(?:[^{}]|\g<paren>)*})/
       block = $1
@@ -181,10 +183,19 @@ class Ef
     block = @result
     @code, @result = code, result
     block.unshift(:block)
-
-    return [:if, condition, block]
   end
 
+  # '{'の左の式を取得
+  def get_l_brace_sentence()
+    condition = ''
+    if @code =~ /\A\s*(.+)(\s+{)/
+      @code = $2 + $'
+      condition = $1
+    end
+    return condition
+  end
+
+  # if文などの条件式を取得
   def judge(condition)
     code, result = @code, @result
     @code = condition
@@ -206,6 +217,27 @@ class Ef
     @code, @result = code, result
     condition.unshift(:condition)
     return condition
+  end
+
+  def my_for()
+    variable = get_token()
+    fail Exception, "can not find 'in'" unless get_token() == :in
+
+    num = frequency(get_l_brace_sentence())
+    block = s_block()
+
+    return [:for, variable, num, block]
+  end
+
+  # ループ回数を取得
+  def frequency(code)
+    first = 0
+    finish = 0
+    if code =~ /\A\s*(\d)...(\d)\s*\z/
+      first = $1
+      finish = $2
+    end
+    return [:frequency, first.to_i, finish.to_i]
   end
 
   def sentences()
@@ -238,9 +270,17 @@ class Ef
         return [:print, call()]
       when :if
         return myIf()
+      when :for
+        return my_for()
     end
   end
 
+
+  #--------------------------------------------------------------------------
+  #
+  # evaluate
+  #
+  #--------------------------------------------------------------------------
   def evaluate()
     # p @result
     @result.each { |e|
