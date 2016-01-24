@@ -233,7 +233,7 @@ class Ef
   def frequency(code)
     first = 0
     finish = 0
-    if code =~ /\A\s*(\d)...(\d)\s*\z/
+    if code =~ /\A\s*(\d+)...(\d+)\s*\z/
       first = $1
       finish = $2
     end
@@ -312,6 +312,8 @@ class Ef
           e_cond(exp[1])
         when :block
           e_block(exp)
+        when :for
+          e_for(exp[1], exp[2], exp[3])
       end
     else
       return exp
@@ -341,6 +343,17 @@ class Ef
   def e_block(block)
     block.each { |b|
       eval(b)
+    }
+  end
+
+  def e_for(variable, freq, block)
+    first = freq[1]
+    finish = freq[2]
+    loop {
+      eval([:assignment, [variable, first] ])
+      eval(block)
+      break if first == finish
+      first += 1
     }
   end
 end

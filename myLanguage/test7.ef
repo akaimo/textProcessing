@@ -1,5 +1,14 @@
+print("start")
 x = 5
 for y in 0...3 {
-  print("ok")
+  print(y)
+
+  for z in 10...15 {
+    print(z)
+  }
+
+  if y {
+    print("+")
+  }
 }
 print("end")
