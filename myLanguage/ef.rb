@@ -148,7 +148,7 @@ class Ef
     return [vari, sentence()]
   end
 
-  def myIf()
+  def my_if()
     condition = get_l_brace_sentence()
 
     return [:if, judge(condition), s_block()]
@@ -269,7 +269,7 @@ class Ef
       when :print
         return [:print, call()]
       when :if
-        return myIf()
+        return my_if()
       when :for
         return my_for()
     end
