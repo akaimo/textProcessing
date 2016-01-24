@@ -1,0 +1,14 @@
+x = 5
+y = "ef"
+if x {
+  comment = "ok"
+  print(comment)
+  print("if")
+  if 3 {
+    print("ef")
+  }
+  if 0 {
+    print("no")
+  }
+}
+x = 7

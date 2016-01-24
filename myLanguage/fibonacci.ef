@@ -1,0 +1,8 @@
+pre1 = 1
+pre2 = 0
+for x in 1...15 {
+  fib = pre1 + pre2
+  print(fib)
+  pre1 = pre2
+  pre2 = fib
+}
