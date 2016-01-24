@@ -126,12 +126,15 @@ class Ef
   end
 
   def assign()
-    vari = get_token()
+    var = get_token()
+    # p @code
+    # p @result
     if @code =~ /\A\s*(=)/
       @code = $'
     else
       fail Exception, "can not find '='"
     end
+    # p @code
 
     token = get_token()
     if token == :dQuot
@@ -140,12 +143,23 @@ class Ef
         result = $1.to_s
       end
       fail Exception, 'can not find `"`' unless get_token() == :dQuot
-      return [vari, result]
-    else
-      unget_token(token)
+      return [:assignment, [var, result]]
     end
 
-    return [vari, sentence()]
+    # p token
+    if token.to_s =~ /\A\s*(\d+|\d+\.\d+)\z/
+      unget_token(token)
+      p 'number' + '>>> ' + token.to_s
+      return [:assignment, [var, sentence()]]
+    else
+      p 'string' + '>>> ' + token
+      p @code
+      return [:assignment, [var, [:variable, token]]]
+    end
+
+    # p @code
+    # p ' '
+    # return [vari, sentence()]
   end
 
   def my_if()
@@ -262,7 +276,9 @@ class Ef
     # 変数
     if token =~ /\A\s*([a-zA-z]\w*)/ && !token.instance_of?(Symbol)
       unget_token(token)
-      return [:assignment, assign()]
+      # p token
+      # return [:assignment, assign()]
+      return assign()
     end
 
     case token
