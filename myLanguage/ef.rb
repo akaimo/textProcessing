@@ -127,14 +127,11 @@ class Ef
 
   def assign()
     var = get_token()
-    # p @code
-    # p @result
     if @code =~ /\A\s*(=)/
       @code = $'
     else
       fail Exception, "can not find '='"
     end
-    # p @code
 
     token = get_token()
     if token == :dQuot
@@ -146,20 +143,19 @@ class Ef
       return [:assignment, [var, result]]
     end
 
-    # p token
     if token.to_s =~ /\A\s*(\d+|\d+\.\d+)\z/
       unget_token(token)
-      p 'number' + '>>> ' + token.to_s
       return [:assignment, [var, sentence()]]
     else
-      p 'string' + '>>> ' + token
-      p @code
+      token2 = get_token()
+      unget_token(token2)
+      if token2 == :add || token2 == :sub || token2 == :mul || token2 == :div
+        unget_token(token)
+        return [:assignment, [var, sentence()]]
+      end
       return [:assignment, [var, [:variable, token]]]
     end
 
-    # p @code
-    # p ' '
-    # return [vari, sentence()]
   end
 
   def my_if()
@@ -276,8 +272,6 @@ class Ef
     # 変数
     if token =~ /\A\s*([a-zA-z]\w*)/ && !token.instance_of?(Symbol)
       unget_token(token)
-      # p token
-      # return [:assignment, assign()]
       return assign()
     end
 
@@ -319,9 +313,9 @@ class Ef
         when :print
           p eval(exp[1])
         when :assignment
-          @space[exp[1][0]] = exp[1][1]
+          @space[exp[1][0]] = eval(exp[1][1])
         when :variable
-          @space[exp[1]] ? eval(@space[exp[1]]) : '0'
+          return @space[exp[1]] ? eval(@space[exp[1]]) : '0'
         when :if
           e_if(exp[1], exp[2])
         when :condition
