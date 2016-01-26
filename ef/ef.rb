@@ -10,6 +10,7 @@ class Ef
     'print' => :print,
     '"' => :dQuot,
     'if' => :if,
+    'else' => :else,
     'for' => :for,
     'in' => :in,
     '==' => :equal,
@@ -166,8 +167,16 @@ class Ef
 
   def my_if()
     condition = get_l_brace_sentence()
+    if_block = s_block()
 
-    return [:if, judge(condition), s_block()]
+    token = get_token()
+    if token == :else
+      else_block = s_block()
+      return [:if_else, judge(condition), if_block, else_block]
+    end
+
+    unget_token(token)
+    return [:if, judge(condition), if_block]
   end
 
   # blockの中身を取得
@@ -333,8 +342,8 @@ class Ef
           @space[exp[1][0]] = eval(exp[1][1])
         when :variable
           return @space[exp[1]] ? eval(@space[exp[1]]) : '0'
-        when :if
-          e_if(exp[1], exp[2])
+        when :if, :if_else
+          e_if(exp)
         when :condition
           e_cond(exp[1])
         when :block
@@ -359,10 +368,12 @@ class Ef
     end
   end
 
-  def e_if(condition, block)
-    c = e_cond(condition)
+  def e_if(array)
+    c = e_cond(array[1])
     if c
-      eval(block)
+      eval(array[2])
+    elsif array[0] == :if_else
+      eval(array[3])
     end
   end
 

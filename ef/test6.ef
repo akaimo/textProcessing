@@ -1,6 +1,6 @@
 x = 5
 y = "ef"
-if x {
+if x != 5 {
   comment = "ok"
   print(comment)
   print("if")
@@ -10,5 +10,7 @@ if x {
   if 0 {
     print("no")
   }
+} else {
+  print("else")
 }
 x = 7
