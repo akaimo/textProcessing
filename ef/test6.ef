@@ -5,7 +5,7 @@ if x {
   print(comment)
   print("if")
   if 3 {
-    print("ef")
+    print(y)
   }
   if 0 {
     print("no")

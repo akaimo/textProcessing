@@ -11,7 +11,8 @@ class Ef
     '"' => :dQuot,
     'if' => :if,
     'for' => :for,
-    'in' => :in
+    'in' => :in,
+    '==' => :equal
   }
 
   attr_accessor :code
@@ -207,6 +208,7 @@ class Ef
 
   # if文などの条件式を取得
   def judge(condition)
+    # p condition
     code, result = @code, @result
     @code = condition
 
@@ -214,18 +216,28 @@ class Ef
     token2 = get_token()
     unget_token(token2)
     unget_token(token)
+    # p token
 
     if token.is_a?(Numeric) || token2 == :add || token2 == :sub || token2 == :mul || token2 == :div
       sentences()
       condition = @result
     elsif token == :dQuot
       condition = [token2]
+    elsif token2 == :equal
+      get_token()
+      get_token()
+      if token.to_s =~ /\A\s*(\d+|\d+\.\d+)\z/
+        condition = [[:equal, token, get_token()]]
+      else
+        condition = [[:equal, [:variable, token], get_token()]]
+      end
     else
       condition = [[:variable, condition]]
     end
 
     @code, @result = code, result
     condition.unshift(:condition)
+    # p condition
     return condition
   end
 
@@ -324,6 +336,8 @@ class Ef
           e_block(exp)
         when :for
           e_for(exp[1], exp[2], exp[3])
+        when :equal
+          return eval(exp[1]) == eval(exp[2]) ? 1 : 0
       end
     else
       return exp
@@ -338,7 +352,9 @@ class Ef
   end
 
   def e_cond(condition)
+    # p condition[1]
     result = eval(condition[1])
+    # p result
     if result.to_s =~ /\d+/
       if result.to_f == 0.0
         return false
