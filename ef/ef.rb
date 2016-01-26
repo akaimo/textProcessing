@@ -172,7 +172,7 @@ class Ef
     token = get_token()
     if token == :else
       else_block = s_block()
-      return [:if_else, judge(condition), if_block, else_block]
+      return [:if, judge(condition), if_block, else_block]
     end
 
     unget_token(token)
@@ -372,7 +372,7 @@ class Ef
     c = e_cond(array[1])
     if c
       eval(array[2])
-    elsif array[0] == :if_else
+    else
       eval(array[3])
     end
   end
