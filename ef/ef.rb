@@ -222,7 +222,6 @@ class Ef
 
   # if文などの条件式を取得
   def judge(condition)
-    # p condition
     code, result = @code, @result
     @code = condition
 
@@ -230,7 +229,6 @@ class Ef
     token2 = get_token()
     unget_token(token2)
     unget_token(token)
-    # p token
 
     if token.is_a?(Numeric) || token2 == :add || token2 == :sub || token2 == :mul || token2 == :div
       sentences()
@@ -251,7 +249,6 @@ class Ef
 
     @code, @result = code, result
     condition.unshift(:condition)
-    # p condition
     return condition
   end
 
@@ -342,7 +339,7 @@ class Ef
           @space[exp[1][0]] = eval(exp[1][1])
         when :variable
           return @space[exp[1]] ? eval(@space[exp[1]]) : '0'
-        when :if, :if_else
+        when :if
           e_if(exp)
         when :condition
           e_cond(exp[1])
@@ -378,9 +375,7 @@ class Ef
   end
 
   def e_cond(condition)
-    # p condition[1]
     result = eval(condition[1])
-    # p result
     if result.to_s =~ /\d+/
       if result.to_f == 0.0
         return false
