@@ -8,3 +8,6 @@ if a != 2 {
 if a < 3 {
   print("greater")
 }
+if a > 0.5 {
+  print("less")
+}
