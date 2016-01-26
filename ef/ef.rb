@@ -14,6 +14,8 @@ class Ef
     'in' => :in,
     '==' => :equal,
     '!=' => :nEqual,
+    '<=' => :greaterEqual,
+    '>=' => :lessEqual,
     '<' => :greater,
     '>' => :less
   }
@@ -226,7 +228,7 @@ class Ef
       condition = @result
     elsif token == :dQuot
       condition = [token2]
-    elsif token2 == :equal || token2 == :nEqual || token2 == :greater || token2 == :less
+    elsif token2 == :equal || token2 == :nEqual || token2 == :greater || token2 == :less || token2 == :greaterEqual || token2 == :lessEqual
       get_token()
       get_token()
       if token.to_s =~ /\A\s*(\d+|\d+\.\d+)\z/
@@ -347,6 +349,10 @@ class Ef
           return eval(exp[1]) < eval(exp[2]) ? 1 : 0
         when :less
           return eval(exp[1]) > eval(exp[2]) ? 1 : 0
+        when :greaterEqual
+          return eval(exp[1]) <= eval(exp[2]) ? 1 : 0
+        when :lessEqual
+          return eval(exp[1]) >= eval(exp[2]) ? 1 : 0
       end
     else
       return exp
