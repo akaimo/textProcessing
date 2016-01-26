@@ -12,7 +12,8 @@ class Ef
     'if' => :if,
     'for' => :for,
     'in' => :in,
-    '==' => :equal
+    '==' => :equal,
+    '!=' => :nEqual
   }
 
   attr_accessor :code
@@ -231,6 +232,14 @@ class Ef
       else
         condition = [[:equal, [:variable, token], get_token()]]
       end
+    elsif token2 == :nEqual
+      get_token()
+      get_token()
+      if token.to_s =~ /\A\s*(\d+|\d+\.\d+)\z/
+        condition = [[:nEqual, token, get_token()]]
+      else
+        condition = [[:nEqual, [:variable, token], get_token()]]
+      end
     else
       condition = [[:variable, condition]]
     end
@@ -338,6 +347,8 @@ class Ef
           e_for(exp[1], exp[2], exp[3])
         when :equal
           return eval(exp[1]) == eval(exp[2]) ? 1 : 0
+        when :nEqual
+          return eval(exp[1]) != eval(exp[2]) ? 1 : 0
       end
     else
       return exp
