@@ -13,7 +13,8 @@ class Ef
     'for' => :for,
     'in' => :in,
     '==' => :equal,
-    '!=' => :nEqual
+    '!=' => :nEqual,
+    '<' => :greater
   }
 
   attr_accessor :code
@@ -224,21 +225,13 @@ class Ef
       condition = @result
     elsif token == :dQuot
       condition = [token2]
-    elsif token2 == :equal
+    elsif token2 == :equal || token2 == :nEqual || token2 == :greater
       get_token()
       get_token()
       if token.to_s =~ /\A\s*(\d+|\d+\.\d+)\z/
-        condition = [[:equal, token, get_token()]]
+        condition = [[token2, token, get_token()]]
       else
-        condition = [[:equal, [:variable, token], get_token()]]
-      end
-    elsif token2 == :nEqual
-      get_token()
-      get_token()
-      if token.to_s =~ /\A\s*(\d+|\d+\.\d+)\z/
-        condition = [[:nEqual, token, get_token()]]
-      else
-        condition = [[:nEqual, [:variable, token], get_token()]]
+        condition = [[token2, [:variable, token], get_token()]]
       end
     else
       condition = [[:variable, condition]]
@@ -349,6 +342,8 @@ class Ef
           return eval(exp[1]) == eval(exp[2]) ? 1 : 0
         when :nEqual
           return eval(exp[1]) != eval(exp[2]) ? 1 : 0
+        when :greater
+          return eval(exp[1]) < eval(exp[2]) ? 1 : 0
       end
     else
       return exp
